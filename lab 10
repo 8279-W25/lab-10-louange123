@@ -1,0 +1,100 @@
+import time
+import board
+import neopixel
+
+# Initialize the 10 NeoPixels on the CPX
+pixels = neopixel.NeoPixel(board.NEOPIXEL, 10, brightness=0.2)
+
+
+# Function to create the Morse code dictionary
+def create_morse_dict():
+    morse_dict = {
+        'a': '.-', 'b': '-...', 'c': '-.-.', 'd': '-..', 'e': '.',
+        'f': '..-.', 'g': '--.', 'h': '....', 'i': '..', 'j': '.---',
+        'k': '-.-', 'l': '.-..', 'm': '--', 'n': '-.', 'o': '---',
+        'p': '.--.', 'q': '--.-', 'r': '.-.', 's': '...', 't': '-',
+        'u': '..-', 'v': '...-', 'w': '.--', 'x': '-..-', 'y': '-.--',
+        'z': '--..', '0': '-----', '1': '.----', '2': '..---', '3': '...--',
+        '4': '....-', '5': '.....', '6': '-....', '7': '--...', '8': '---..',
+        '9': '----.', ' ': '/'
+    }
+    return morse_dict
+
+
+# Function to clean user input
+def clean_input(sentence, morse_dict):
+    sentence = sentence.lower()
+    cleaned = ''.join(char for char in sentence if char in morse_dict)
+    return cleaned
+
+
+# Function to convert sentence to Morse code list
+def convert_to_morse(cleaned_sentence, morse_dict):
+    morse_list = []
+    for char in cleaned_sentence:
+        if char == ' ':
+            morse_list.append('/')
+        else:
+            morse_list.append(morse_dict[char])
+            morse_list.append(  ' ')
+    return morse_list
+
+
+# Function to turn on all LEDs
+def leds_on(color):
+    pixels.fill(color)
+
+
+# Function to turn off all LEDs
+def leds_off():
+    pixels.fill((0, 0, 0))
+
+
+# Function to display Morse code on LEDs
+def display_morse(morse_list, unit_time, color):
+    for symbol in morse_list:
+        if symbol == '.':
+            leds_on(color)
+            time.sleep(unit_time)  # 1 unit for dot
+            leds_off()
+            time.sleep(unit_time)  # 1 unit space between parts
+        elif symbol == '-':
+            leds_on(color)
+            time.sleep(3 * unit_time)  # 3 units for dash
+            leds_off()
+            time.sleep(unit_time)  # 1 unit space between parts
+        elif symbol == ' ':
+            time.sleep(2 * unit_time)  # Additional 2 units (total 3) between letters
+        elif symbol == '/':
+            time.sleep(6 * unit_time)  # Additional 6 units (total 7) between words
+
+
+# Main program
+def main():
+    morse_dict = create_morse_dict()
+
+    # Get user input (in Mu, use the Serial monitor)
+    unit_time = float(input("Enter unit time (0-1 second): "))
+    if not (0 <= unit_time <= 1):
+        print("Unit time must be between 0 and 1!")
+        return
+
+    sentence = input("Enter a sentence: ")
+    cleaned_sentence = clean_input(sentence, morse_dict)
+    if not cleaned_sentence:
+        print("No valid characters to convert!")
+        return
+
+    # Get LED color
+    color = tuple(map(int, input("Enter RGB color (e.g., 255,0,0 for red): ").split(',')))
+
+    # Convert to Morse code
+    morse_list = convert_to_morse(cleaned_sentence, morse_dict)
+    print("Displaying:", ''.join(morse_list))
+
+    # Display on LEDs
+    display_morse(morse_list, unit_time, color)
+
+
+# Run the program
+main()

@@ -1,0 +1,60 @@
+# Function to create the Morse code dictionary
+def create_morse_dict():
+    morse_dict = {
+        'a': '.-', 'b': '-...', 'c': '-.-.', 'd': '-..', 'e': '.',
+        'f': '..-.', 'g': '--.', 'h': '....', 'i': '..', 'j': '.---',
+        'k': '-.-', 'l': '.-..', 'm': '--', 'n': '-.', 'o': '---',
+        'p': '.--.', 'q': '--.-', 'r': '.-.', 's': '...', 't': '-',
+        'u': '..-', 'v': '...-', 'w': '.--', 'x': '-..-', 'y': '-.--',
+        'z': '--..', '0': '-----', '1': '.----', '2': '..---', '3': '...--',
+        '4': '....-', '5': '.....', '6': '-....', '7': '--...', '8': '---..',
+        '9': '----.', ' ': '/'  # Space between words
+    }
+    return morse_dict
+
+
+# Function to clean user input
+def clean_input(sentence, morse_dict):
+    sentence = sentence.lower()  # Convert to lowercase
+    # Keep only characters that are in the Morse dictionary
+    cleaned = ''.join(char for char in sentence if char in morse_dict)
+    return cleaned
+
+
+# Function to convert sentence to Morse code list
+def convert_to_morse(cleaned_sentence, morse_dict):
+    morse_list = []
+    for char in cleaned_sentence:
+        if char == ' ':
+            morse_list.append('/')  # 7-unit space between words
+        else:
+            morse_list.append(morse_dict[char])  # Add Morse code for the character
+            morse_list.append(' ')  # 3-unit space between letters
+    return morse_list
+
+
+# Main program
+def main():
+    # Create the Morse code dictionary
+    morse_dict = create_morse_dict()
+
+    # Get user input
+    sentence = input("Enter a sentence to convert to Morse code: ")
+
+    # Clean the input
+    cleaned_sentence = clean_input(sentence, morse_dict)
+    if not cleaned_sentence:
+        print("No valid characters to convert!")
+        return
+
+    # Convert to Morse code
+    morse_list = convert_to_morse(cleaned_sentence, morse_dict)
+
+    # Display the result
+    print("Cleaned sentence:", cleaned_sentence)
+    print("Morse code:", ''.join(morse_list))
+
+
+# Run the program
+if __name__ == "__main__":
+    main()
